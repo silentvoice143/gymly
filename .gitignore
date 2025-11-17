@@ -1,0 +1,88 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.log
+
+# Byte-compiled / optimized / DLL files
+*.so
+*.dll
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# -------------------------
+# Flask / App
+# -------------------------
+instance/
+*.db
+*.sqlite3
+
+# Flask Migration Files
+migrations/versions/*.pyc
+migrations/versions/*.py~
+migrations/*.pyc
+
+# Cache
+.cache/
+*.cache
+
+# Settings & secrets (very important)
+.env
+*.env
+.env.*
+config.env
+settings.env
+
+
+
+# -------------------------
+# OS / Editor Files
+# -------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# -------------------------
+# Dependency folders
+# -------------------------
+pip-wheel-metadata/
+build/
+dist/
+*.egg-info/
+
+# -------------------------
+# Logs
+# -------------------------
+logs/
+*.log
+
+# -------------------------
+# Test / Dump Files
+# -------------------------
+*.tmp
+*.bak
+*.old
+
+# -------------------------
+# Pytest / Coverage
+# -------------------------
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# -------------------------
+# Compiled Docs
+# -------------------------
+docs/_build/
