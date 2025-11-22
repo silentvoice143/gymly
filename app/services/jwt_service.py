@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
-from config.settings import Config
+from app.config.settings import Config
 
 
 class JWTService:

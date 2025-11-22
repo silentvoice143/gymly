@@ -2,6 +2,7 @@ from flask import request, jsonify
 import jwt
 from app.config.settings import Config
 from app.models.user import User
+from app.services.jwt_service import JWTService
 
 
 def token_required(fn):
@@ -14,7 +15,7 @@ def token_required(fn):
         token = auth_header.split(" ")[1]
 
         try:
-            data = jwt.decode(token, Config.JWT_SECRET, algorithms=["HS256"])
+            data = JWTService.decode_token(token)
             user = User.query.get(data["user_id"])
         except Exception:
             return jsonify({"error": "Invalid or expired token"}), 401
