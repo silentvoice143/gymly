@@ -1,14 +1,13 @@
 from flask import request, jsonify
-import jwt
-from app.config.settings import Config
 from app.models.user import User
 from app.services.jwt_service import JWTService
-
+from functools import wraps
+from jwt import ExpiredSignatureError, InvalidTokenError
 
 def token_required(fn):
+    @wraps(fn)
     def wrapper(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
-
         if not auth_header or not auth_header.startswith("Bearer "):
             return jsonify({"error": "Authorization required"}), 401
 
@@ -16,10 +15,17 @@ def token_required(fn):
 
         try:
             data = JWTService.decode_token(token)
-            user = User.query.get(data["user_id"])
-        except Exception:
-            return jsonify({"error": "Invalid or expired token"}), 401
+            user = User.query.get(data.get("user_id"))
+            if not user:
+                return jsonify({"error": "User not found"}), 404
+        except ExpiredSignatureError:
+            return jsonify({"error": "Token expired"}), 401
+        except InvalidTokenError:
+            return jsonify({"error": "Invalid token"}), 401
 
-        return fn(user, *args, **kwargs)
-    wrapper.__name__ = fn.__name__
+        # Attach user to request for downstream use
+        request.current_user = user
+
+        return fn(*args, **kwargs)
+
     return wrapper

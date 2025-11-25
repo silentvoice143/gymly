@@ -6,6 +6,9 @@ from app.extensions import api
 
 # Import namespaces
 from app.routes.auth_routes import auth_ns
+from app.routes.user_route import user_ns
+from app.routes.gym_route import gym_ns
+from app.routes.attendance_route import attendance_ns
 
 def create_app():
     app = Flask(__name__)
@@ -24,6 +27,9 @@ def create_app():
 
     # register apis
     api.add_namespace(auth_ns, path="/auth")
+    api.add_namespace(user_ns, path="/user")
+    api.add_namespace(gym_ns, path="/gym")
+    api.add_namespace(attendance_ns, path="/attendance")
     
     
 

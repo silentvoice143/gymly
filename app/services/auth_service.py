@@ -1,66 +1,61 @@
 from datetime import datetime, timedelta
-import jwt
-
 from app.extensions import db
 from app.models.user import User
-from app.config.settings import Config
 from app.services.jwt_service import JWTService
 
 
 class AuthService:
-
     @staticmethod
     def signup(name, email, password):
-        email = email.lower().strip()
+      email = email.lower().strip()
 
-        # check if email exists
-        if User.query.filter_by(email=email).first():
-            return None, "Email already exists"
+      if User.query.filter_by(email=email).first():
+        return None, "Email already exists"
 
-        # Create user object
-        user = User(
-            name=name,
-            email=email,
-            role="user"
-        )
+      user = User(
+        name=name,
+        email=email,
+        role="user",
+        is_subscription_active=False,
+        trial_started_at=None,
+        trial_ends_at=None
+    )
 
-        # Use User model method to hash password
-        user.set_password(password)
+      user.set_password(password)
 
-        # 2-month free trial (Gymly feature)
-        now = datetime.utcnow()
-        user.is_subscription_active = True
-        user.trial_started_at = now
-        user.trial_ends_at = now + timedelta(days=60)
+      db.session.add(user)
+      db.session.commit()
 
-        db.session.add(user)
-        db.session.commit()
+      return user, None
 
-        return user, None
+@staticmethod
+def signup_gym_owner(name, email, password):
+    email = email.lower().strip()
 
-    @staticmethod
-    def signup_gym_owner(name, email, password):
-        email = email.lower().strip()
+    if User.query.filter_by(email=email).first():
+        return None, "Email already exists"
 
-        if User.query.filter_by(email=email).first():
-            return None, "Email already exists"
+    now = datetime.utcnow()
 
-        user = User(
-            name=name,
-            email=email,
-            role="gym_owner"
-        )
+    # Gym owner gets a 1-month free trial
+    user = User(
+        name=name,
+        email=email,
+        role="gym_owner",
+        is_subscription_active=True,  # active during trial
+        trial_started_at=now,
+        trial_ends_at=now + timedelta(days=30)  # <-- 1 month trial
+    )
 
-        # Use helper
-        user.set_password(password)
+    user.set_password(password)
 
-        db.session.add(user)
-        db.session.commit()
+    db.session.add(user)
+    db.session.commit()
 
-        return user, None
+    return user, None
 
-    @staticmethod
-    def login(email, password):
+@staticmethod
+def login(email, password):
         email = email.lower().strip()
 
         user = User.query.filter_by(email=email).first()
